@@ -1,0 +1,101 @@
+id,name,address,industry,state
+1,Apple Inc.,1 Apple Park Way Cupertino CA 95014,Technology,CA
+2,Apple Incorporated,One Apple Park Way Cupertino California,Technology,California
+3,Microsoft Corporation,One Microsoft Way Redmond WA 98052,Technology,WA
+4,Microsft Corp,1 Microsoft Way Redmond Washington,Technology,Washington
+5,MSFT Inc,Microsoft Way Redmond WA,Technology,WA
+6,Amazon.com Inc.,410 Terry Ave N Seattle WA 98109,E-Commerce,WA
+7,Amazon Inc,410 Terry Avenue North Seattle Washington,E-Commerce,Washington
+8,Amazon.com Incorporated,Terry Ave North Seattle WA,Retail,WA
+9,Google LLC,1600 Amphitheatre Parkway Mountain View CA,Technology,CA
+10,Alphabet Inc,1600 Amphitheatre Pkwy Mountain View California,Technology,California
+11,Meta Platforms Inc.,1 Hacker Way Menlo Park CA 94025,Social Media,CA
+12,Facebook Inc,1 Hacker Way Menlo Park California,Social Media,California
+13,Meta Platforms Incorporated,Hacker Way Menlo Park CA,Technology,CA
+14,Tesla Inc.,3500 Deer Creek Road Palo Alto CA 94304,Automotive,CA
+15,Tesla Motors Inc,3500 Deer Creek Rd Palo Alto California,Automotive,California
+16,TSLA Corporation,Deer Creek Road Palo Alto CA,Electric Vehicles,CA
+17,Netflix Inc.,100 Winchester Circle Los Gatos CA 95032,Entertainment,CA
+18,Netflix Incorporated,100 Winchester Cir Los Gatos California,Streaming,California
+19,Nvidia Corporation,2788 San Tomas Expressway Santa Clara CA,Technology,CA
+20,NVIDIA Corp,2788 San Tomas Expy Santa Clara California,Semiconductors,California
+21,Intel Corporation,2200 Mission College Blvd Santa Clara CA,Semiconductors,CA
+22,Intel Corp.,2200 Mission College Boulevard Santa Clara California,Technology,California
+23,Oracle Corporation,500 Oracle Parkway Redwood City CA 94065,Software,CA
+24,Oracle Corp,500 Oracle Pkwy Redwood City California,Enterprise Software,California
+25,Salesforce Inc.,415 Mission Street San Francisco CA 94105,Software,CA
+26,Salesforce.com Inc,415 Mission St San Francisco California,Cloud Computing,California
+27,Adobe Inc.,345 Park Avenue San Jose CA 95110,Software,CA
+28,Adobe Systems Incorporated,345 Park Ave San Jose California,Technology,California
+29,Cisco Systems Inc.,170 West Tasman Drive San Jose CA,Networking,CA
+30,Cisco Systems Incorporated,170 W Tasman Dr San Jose California,Technology,California
+31,PayPal Holdings Inc.,2211 North First Street San Jose CA,FinTech,CA
+32,Paypal Inc,2211 N First St San Jose California,Payments,California
+33,Uber Technologies Inc.,1455 Market Street San Francisco CA,Transportation,CA
+34,Uber Inc,1455 Market St San Francisco California,Ridesharing,California
+35,Airbnb Inc.,888 Brannan Street San Francisco CA,Hospitality,CA
+36,AirBnB Incorporated,888 Brannan St San Francisco California,Travel,California
+37,Spotify Technology SA,4 World Trade Center New York NY 10007,Entertainment,NY
+38,Spotify Inc,World Trade Center New York New York,Music Streaming,NY
+39,Twitter Inc.,1355 Market Street San Francisco CA,Social Media,CA
+40,X Corp,1355 Market St San Francisco California,Technology,California
+41,Walmart Inc.,702 SW 8th Street Bentonville AR 72716,Retail,AR
+42,Wal-Mart Stores Inc,702 Southwest 8th St Bentonville Arkansas,Retail,Arkansas
+43,JPMorgan Chase & Co.,383 Madison Avenue New York NY 10179,Banking,NY
+44,JP Morgan Chase,383 Madison Ave New York New York,Financial Services,NY
+45,Bank of America Corporation,100 North Tryon Street Charlotte NC,Banking,NC
+46,Bank of America Corp,100 N Tryon St Charlotte North Carolina,Financial Services,NC
+47,Goldman Sachs Group Inc.,200 West Street New York NY 10282,Investment Banking,NY
+48,Goldman Sachs,200 W Street New York New York,Finance,NY
+49,Morgan Stanley,1585 Broadway New York NY 10036,Investment Banking,NY
+50,Morgan Stanley Inc,1585 Broadway Ave New York New York,Financial Services,NY
+51,Chevron Corporation,6001 Bollinger Canyon Road San Ramon CA,Energy,CA
+52,Chevron Corp,6001 Bollinger Canyon Rd San Ramon California,Oil and Gas,California
+53,ExxonMobil Corporation,5959 Las Colinas Boulevard Irving TX,Energy,TX
+54,Exxon Mobil Corp,5959 Las Colinas Blvd Irving Texas,Oil and Gas,Texas
+55,Johnson & Johnson,One Johnson & Johnson Plaza New Brunswick NJ,Healthcare,NJ
+56,Johnson and Johnson Inc,1 Johnson Johnson Plaza New Brunswick New Jersey,Pharmaceuticals,NJ
+57,Procter & Gamble Company,1 Procter Gamble Plaza Cincinnati OH,Consumer Goods,OH
+58,Procter and Gamble Co,One Procter & Gamble Plaza Cincinnati Ohio,FMCG,Ohio
+59,Coca-Cola Company,1 Coca-Cola Plaza Atlanta GA 30313,Beverages,GA
+60,Coca Cola Co,One Coca-Cola Plz Atlanta Georgia,Consumer Goods,Georgia
+61,PepsiCo Inc.,700 Anderson Hill Road Purchase NY 10577,Beverages,NY
+62,Pepsi Co Incorporated,700 Anderson Hill Rd Purchase New York,Consumer Goods,NY
+63,Nike Inc.,One Bowerman Drive Beaverton OR 97005,Apparel,OR
+64,Nike Incorporated,1 Bowerman Dr Beaverton Oregon,Sportswear,Oregon
+65,McDonald's Corporation,110 North Carpenter Street Chicago IL 60607,Food Service,IL
+66,McDonalds Corp,110 N Carpenter St Chicago Illinois,Fast Food,Illinois
+67,Starbucks Corporation,2401 Utah Avenue South Seattle WA 98134,Food Service,WA
+68,Starbucks Corp,2401 Utah Ave S Seattle Washington,Coffee,Washington
+69,Home Depot Inc.,2455 Paces Ferry Road Atlanta GA 30339,Retail,GA
+70,The Home Depot Incorporated,2455 Paces Ferry Rd Atlanta Georgia,Home Improvement,Georgia
+71,Costco Wholesale Corporation,999 Lake Drive Issaquah WA 98027,Retail,WA
+72,Costco Wholesale Corp,999 Lake Dr Issaquah Washington,Wholesale,Washington
+73,Target Corporation,1000 Nicollet Mall Minneapolis MN 55403,Retail,MN
+74,Target Corp,1000 Nicollet Mall Minneapolis Minnesota,Department Store,Minnesota
+75,Berkshire Hathaway Inc.,3555 Farnam Street Omaha NE 68131,Conglomerate,NE
+76,Berkshire Hathaway Incorporated,3555 Farnam St Omaha Nebraska,Investment,Nebraska
+77,UnitedHealth Group Inc.,9900 Bren Road East Minnetonka MN,Healthcare,MN
+78,United Health Group,9900 Bren Rd E Minnetonka Minnesota,Health Insurance,Minnesota
+79,Verizon Communications Inc.,1095 Avenue of the Americas New York NY,Telecommunications,NY
+80,Verizon Inc,1095 Ave of Americas New York New York,Telecom,NY
+81,AT&T Inc.,208 South Akard Street Dallas TX 75202,Telecommunications,TX
+82,ATT Incorporated,208 S Akard St Dallas Texas,Telecom,Texas
+83,Comcast Corporation,1701 JFK Boulevard Philadelphia PA 19103,Media,PA
+84,Comcast Corp,1701 JFK Blvd Philadelphia Pennsylvania,Cable,Pennsylvania
+85,Walt Disney Company,500 South Buena Vista Street Burbank CA,Entertainment,CA
+86,Disney Inc,500 S Buena Vista St Burbank California,Media,California
+87,IBM Corporation,1 New Orchard Road Armonk NY 10504,Technology,NY
+88,International Business Machines,1 New Orchard Rd Armonk New York,IT Services,NY
+89,I.B.M. Corp,New Orchard Road Armonk NY,Consulting,NY
+90,General Electric Company,5 Necco Street Boston MA 02210,Conglomerate,MA
+91,GE Corporation,5 Necco St Boston Massachusetts,Industrial,Massachusetts
+92,General Motors Company,300 Renaissance Center Detroit MI 48265,Automotive,MI
+93,GM Corp,300 Renaissance Ctr Detroit Michigan,Auto Manufacturing,Michigan
+94,Ford Motor Company,1 American Road Dearborn MI 48126,Automotive,MI
+95,Ford Motor Co,One American Rd Dearborn Michigan,Auto Manufacturing,Michigan
+96,Boeing Company,100 North Riverside Plaza Chicago IL,Aerospace,IL
+97,Boeing Corp,100 N Riverside Plz Chicago Illinois,Defense,Illinois
+98,Lockheed Martin Corporation,6801 Rockledge Drive Bethesda MD,Aerospace,MD
+99,Lockheed Martin Corp,6801 Rockledge Dr Bethesda Maryland,Defense,Maryland
+100,Raytheon Technologies Corporation,870 Winter Street Waltham MA,Aerospace,MA
