@@ -4,10 +4,10 @@ sentence-transformers makes this way easier than doing it manually - tried using
 raw transformers at first and it was a nightmare of tokenization edge cases.
 """
 
+
 import numpy as np
 import structlog
 from sentence_transformers import SentenceTransformer
-from typing import Optional  # not using this anymore but keeping for now
 
 from resolve_ai.config import MatchConfig
 from resolve_ai.models import Record

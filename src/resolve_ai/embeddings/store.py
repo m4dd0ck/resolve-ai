@@ -183,9 +183,10 @@ class EmbeddingStore:
         Args:
             path: Path to save the index (the .meta file will be at path.meta).
         """
-        import faiss
         import pickle
         from pathlib import Path
+
+        import faiss
 
         index_path = Path(path)
         faiss.write_index(self.index, str(index_path))
@@ -212,9 +213,10 @@ class EmbeddingStore:
         Args:
             path: Path to the saved index.
         """
-        import faiss
         import pickle
         from pathlib import Path
+
+        import faiss
 
         index_path = Path(path)
         self._index = faiss.read_index(str(index_path))

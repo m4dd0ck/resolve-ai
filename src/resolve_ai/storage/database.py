@@ -16,7 +16,6 @@ interface would be way better for reviewing hundreds of uncertain pairs
 """
 
 import json
-from datetime import datetime
 from pathlib import Path
 
 import duckdb
@@ -24,7 +23,6 @@ import structlog
 
 from resolve_ai.models import (
     CandidatePair,
-    EntityCluster,
     MatchClassification,
     PairScores,
     Record,

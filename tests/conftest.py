@@ -1,7 +1,8 @@
 """Shared test fixtures."""
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 from resolve_ai.config import MatchConfig
 from resolve_ai.models import Record

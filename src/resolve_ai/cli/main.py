@@ -87,7 +87,9 @@ def match(
         None, "--address", "-a", help="Column for address (optional)"
     ),
     id_field: str = typer.Option(None, "--id", "-i", help="Column for record ID (optional)"),
-    fields: str = typer.Option("name", "--fields", "-f", help="Comma-separated fields for matching"),
+    fields: str = typer.Option(
+        "name", "--fields", "-f", help="Comma-separated fields for matching"
+    ),
     threshold: float = typer.Option(
         0.5, "--threshold", "-t", help="Similarity threshold for candidates"
     ),
@@ -120,7 +122,7 @@ def match(
     ) as progress:
         if file_path and file_path.exists():
             progress.add_task("Running full pipeline...", total=None)
-            scores = pipeline.run(
+            pipeline.run(
                 file_path,
                 name_field=name_field,
                 address_field=address_field,
@@ -129,7 +131,7 @@ def match(
             )
         else:
             progress.add_task("Running matching on existing records...", total=None)
-            scores = pipeline.run_on_loaded_records(match_fields)
+            pipeline.run_on_loaded_records(match_fields)
 
     stats = pipeline.get_statistics()
 
