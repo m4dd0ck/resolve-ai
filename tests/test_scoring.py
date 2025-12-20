@@ -1,10 +1,9 @@
 """Tests for the scoring engine."""
 
-import pytest
 
 from resolve_ai.config import MatchConfig
 from resolve_ai.matching.scoring import ScoringEngine
-from resolve_ai.models import MatchClassification, Record
+from resolve_ai.models import MatchClassification
 
 
 class TestFuzzyScoring:

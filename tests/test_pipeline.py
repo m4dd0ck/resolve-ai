@@ -1,7 +1,5 @@
 """Tests for the entity resolution pipeline."""
 
-import pytest
-from pathlib import Path
 
 from resolve_ai.config import MatchConfig
 from resolve_ai.models import MatchClassification
