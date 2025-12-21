@@ -1,12 +1,4 @@
-"""CLI interface for ResolveAI entity resolution.
-
-typer + rich is chef's kiss for CLIs - you get argument parsing, help text,
-and beautiful terminal output with almost no boilerplate. the progress spinners
-and tables make this feel like a real tool.
-
-TODO: add progress bars for long-running jobs - right now we just show a spinner
-which isn't super helpful when processing 100k records
-"""
+"""CLI interface for ResolveAI entity resolution."""
 
 from pathlib import Path
 
@@ -21,8 +13,6 @@ from resolve_ai.models import MatchClassification, ReviewDecision
 from resolve_ai.pipeline import ResolutionPipeline
 from resolve_ai.storage.database import Database
 
-# configure structlog for pretty console output during CLI use
-# in production you'd probably want JSON format for log aggregation
 structlog.configure(
     processors=[
         structlog.stdlib.add_log_level,
@@ -34,8 +24,6 @@ structlog.configure(
 log = structlog.get_logger()
 console = Console()
 
-# no_args_is_help=True shows help when user runs `resolve` with no subcommand
-# way better UX than a cryptic error message
 app = typer.Typer(
     name="resolve",
     help="ResolveAI: Entity Resolution with Hybrid Matching",
@@ -100,12 +88,7 @@ def match(
         Path("resolve.db"), "--db", "-d", help="Database file path"
     ),
 ) -> None:
-    """Run entity matching on data.
-
-    This is the main workhorse command. Can either ingest + match in one go,
-    or just run matching on already-ingested records (handy for testing
-    different threshold values).
-    """
+    """Run entity matching on data."""
     config = MatchConfig(
         db_path=db_path,
         ann_threshold=threshold,
@@ -205,14 +188,7 @@ def review(
     ),
     limit: int = typer.Option(10, "--limit", "-l", help="Number of pairs to review"),
 ) -> None:
-    """Review uncertain matches interactively.
-
-    This is where the human-in-the-loop magic happens. Shows uncertain pairs
-    one at a time with all the score details so you can make an informed
-    decision. Your decisions are saved and used in the final export.
-
-    TODO: this works but a streamlit UI would be so much better for bulk review
-    """
+    """Review uncertain matches interactively."""
     if not db_path.exists():
         console.print(f"[red]Error: Database not found: {db_path}[/red]")
         raise typer.Exit(1)
@@ -248,15 +224,11 @@ def review(
 
         console.print(table)
 
-        # show all the score components so reviewer can understand why it's uncertain
-        # in my testing, pairs where fuzzy is high but embedding is low (or vice versa)
-        # are usually the trickiest - e.g., "John Smith" vs "Jon Smith" vs "John Smith Jr"
         console.print()
         console.print(f"[dim]Fuzzy (Levenshtein): {score.levenshtein_ratio:.3f}[/dim]")
         console.print(f"[dim]Fuzzy (Jaro-Winkler): {score.jaro_winkler:.3f}[/dim]")
         console.print(f"[dim]Embedding similarity: {score.cosine_similarity:.3f}[/dim]")
 
-        # once we add LLM integration, this will show the model's reasoning
         if score.llm_reasoning:
             console.print(f"\n[bold]LLM Reasoning:[/bold] {score.llm_reasoning}")
 
@@ -284,8 +256,6 @@ def review(
         else:
             console.print("[yellow]Skipped.[/yellow]")
 
-        # small delay so you can see the "saved" message before screen clears
-        # could make this configurable but 0.5s feels right
         import time
         time.sleep(0.5)
 

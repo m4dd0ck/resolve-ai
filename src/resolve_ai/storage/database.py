@@ -1,19 +1,4 @@
-"""DuckDB persistence layer for entity resolution.
-
-DuckDB is so much nicer than sqlite for analytics stuff - it handles JSON natively,
-does columnar storage, and the SQL syntax is way more modern. Plus it's embedded
-so no server to manage.
-
-The schema here tracks the full entity resolution workflow:
-  1. records - raw data ingested from CSV/JSON/Parquet files
-  2. candidate_pairs - potential matches found by blocking or ANN search
-  3. pair_scores - detailed similarity scores for each candidate
-  4. review_decisions - human feedback on uncertain matches
-  5. entity_clusters - final resolved entities (groups of matching records)
-
-TODO: add streamlit dashboard for review UI - the CLI works but a visual
-interface would be way better for reviewing hundreds of uncertain pairs
-"""
+"""DuckDB persistence layer for entity resolution."""
 
 import json
 from pathlib import Path
@@ -31,11 +16,6 @@ from resolve_ai.models import (
 
 log = structlog.get_logger()
 
-# structlog gives us nice structured logs that are easy to parse later
-# could pipe these into elasticsearch or something for production monitoring
-
-# schema is idempotent - can run multiple times without issues
-# the CHECK constraints on classification/decision catch bugs early
 SCHEMA_SQL = """
 -- Records ingested from source files
 CREATE TABLE IF NOT EXISTS records (
@@ -59,16 +39,14 @@ CREATE TABLE IF NOT EXISTS candidate_pairs (
 );
 
 -- Detailed scores for each candidate pair
--- llm_score is None for now - will add ollama integration later
--- keeping the column so we don't need a migration when we add it
 CREATE TABLE IF NOT EXISTS pair_scores (
     pair_id TEXT PRIMARY KEY,
     levenshtein_ratio FLOAT,
     jaro_winkler FLOAT,
     token_sort_ratio FLOAT,
     cosine_similarity FLOAT,
-    llm_score FLOAT,              -- this is where LLM would help disambiguate uncertain pairs
-    llm_reasoning TEXT,           -- store the LLM's explanation for auditing
+    llm_score FLOAT,
+    llm_reasoning TEXT,
     composite_score FLOAT NOT NULL,
     classification TEXT CHECK (classification IN ('match', 'no_match', 'uncertain')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -103,16 +81,11 @@ class Database:
             db_path: Path to database file or ":memory:" for in-memory.
         """
         self.db_path = Path(db_path) if db_path != ":memory:" else db_path
-        # lazy db connection so tests can use :memory: without hitting disk
         self._conn: duckdb.DuckDBPyConnection | None = None
 
     @property
     def conn(self) -> duckdb.DuckDBPyConnection:
-        """Get or create database connection.
-
-        lazy initialization means we don't create the file until first query -
-        useful when you just want to instantiate the class to check config
-        """
+        """Get or create database connection."""
         if self._conn is None:
             self._conn = duckdb.connect(str(self.db_path))
             self._init_schema()
@@ -142,8 +115,6 @@ class Database:
         if not records:
             return 0
 
-        # ON CONFLICT DO UPDATE is way cleaner than checking existence first
-        # also handles the case where you re-ingest the same file with updates
         for record in records:
             self.conn.execute(
                 """
@@ -300,17 +271,12 @@ class Database:
     ) -> list[tuple[PairScores, Record, Record]]:
         """Get pair scores by classification with associated records.
 
-        This query joins across three tables which isn't super efficient for
-        large datasets - might want to add indexes on pair_scores.classification
-        and candidate_pairs.pair_id if this becomes a bottleneck.
-
         Args:
             classification: The classification to filter by.
 
         Returns:
             List of (PairScores, record_a, record_b) tuples.
         """
-        # TODO: add pagination for large result sets - this loads everything into memory
         results = self.conn.execute(
             """
             SELECT
@@ -501,15 +467,10 @@ class Database:
     def export_matches(self, output_path: Path, format: str = "csv") -> None:
         """Export matches to a file.
 
-        Exports include both auto-matches (high confidence) and human-reviewed matches.
-        The review_decision column lets downstream systems know if a match was
-        verified by a human.
-
         Args:
             output_path: Path to output file.
             format: Output format ('csv' or 'json').
         """
-        # include both algorithmic matches AND human-approved matches
         results = self.conn.execute(
             """
             SELECT

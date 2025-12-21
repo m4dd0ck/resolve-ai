@@ -1,8 +1,4 @@
-"""Data loading from various file formats.
-
-this is the main entry point for getting data into the system. learned my lesson
-at a previous job about separating loading from transformation.
-"""
+"""Data loading from various file formats."""
 
 import csv
 import json
@@ -16,20 +12,11 @@ from resolve_ai.models import Record
 
 log = structlog.get_logger()
 
-# TODO: might want to add support for xlsx files at some point, but pandas is heavy
-# and I'm trying to keep deps minimal for now
-
 
 class DataLoader:
-    """Load records from CSV, JSON, or Parquet files.
-
-    not super fancy but gets the job done. the main thing is that it normalizes
-    everything on the way in so we don't have to worry about it later.
-    """
+    """Load records from CSV, JSON, or Parquet files."""
 
     def __init__(self, normalizer: TextNormalizer | None = None):
-        # default normalizer is fine for most cases, but you can inject a custom
-        # one if you need different behavior (like for international data)
         self.normalizer = normalizer or TextNormalizer()
 
     def load(
@@ -53,8 +40,6 @@ class DataLoader:
         file_path = Path(file_path)
         suffix = file_path.suffix.lower()
 
-        # simple dispatch based on extension - could use a registry pattern but
-        # this is more readable and we only have 3 formats anyway
         if suffix == ".csv":
             return self._load_csv(file_path, name_field, address_field, id_field)
         elif suffix == ".json":
@@ -73,8 +58,6 @@ class DataLoader:
     ) -> list[Record]:
         """Load records from CSV."""
         records = []
-        # newline="" is important here or you get weird behavior on windows
-        # took me a while to figure out why tests were failing on CI
         with open(file_path, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row_num, row in enumerate(reader):
@@ -102,8 +85,6 @@ class DataLoader:
         with open(file_path, encoding="utf-8") as f:
             data = json.load(f)
 
-        # handle both single objects and arrays - this is a bit loose but convenient
-        # for testing with small files
         if not isinstance(data, list):
             data = [data]
 
@@ -129,19 +110,10 @@ class DataLoader:
         address_field: str | None,
         id_field: str | None,
     ) -> list[Record]:
-        """Load records from Parquet using DuckDB.
-
-        using duckdb instead of pyarrow because it's faster and handles more edge
-        cases out of the box. plus the query syntax is nice if we ever need to
-        add filtering.
-        """
-        # lazy import because duckdb is a big dependency and most users will
-        # just be using csv anyway
+        """Load records from Parquet using DuckDB."""
         import duckdb
 
-        # in-memory connection is fine here, we're just reading a file
         conn = duckdb.connect()
-        # this is kinda hacky but duckdb auto-detects parquet files which is nice
         df = conn.execute(f"SELECT * FROM '{file_path}'").fetchdf()
 
         records = []
@@ -169,34 +141,21 @@ class DataLoader:
         address_field: str | None,
         id_field: str | None,
     ) -> Record:
-        """Create a Record from a row of data.
-
-        this is where the magic happens - we store both raw and normalized data
-        so we can always trace back to the original if something looks weird.
-        """
-        # Generate or extract record ID
-        # using first 8 chars of uuid is probably fine for most datasets
-        # TODO: might want to use a hash of the row content instead to detect duplicates
+        """Create a Record from a row of data."""
         if id_field and id_field in row:
             record_id = str(row[id_field])
         else:
             record_id = str(uuid.uuid4())[:8]
 
-        # Normalize name - empty string check avoids unnecessary work
         name_raw = row.get(name_field, "")
         name_normalized = self.normalizer.normalize_name(name_raw) if name_raw else None
 
-        # Normalize address if provided
-        # address is optional because some datasets only have names
         address_normalized = None
         if address_field and address_field in row:
             address_raw = row.get(address_field, "")
             address_normalized = (
                 self.normalizer.normalize_address(address_raw) if address_raw else None
             )
-
-        # keeping this around in case we need to debug normalization issues
-        # print(f"DEBUG: {name_raw!r} -> {name_normalized!r}")
 
         return Record(
             record_id=record_id,
