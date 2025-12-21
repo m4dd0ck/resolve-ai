@@ -1,27 +1,4 @@
-"""Entity resolution pipeline orchestrator.
-
-This is the main entry point that ties everything together. The pipeline runs in
-four stages:
-
-  1. INGEST: Load records from CSV/JSON/Parquet, normalize text (lowercase,
-     strip whitespace, expand abbreviations like "St." -> "Street")
-
-  2. EMBED: Generate vector embeddings for each record using sentence-transformers.
-     These capture semantic meaning so "IBM" and "International Business Machines"
-     end up close together in vector space.
-
-  3. CANDIDATES: Find potential matches using blocking (cheap, catches obvious pairs)
-     and ANN search (finds semantically similar pairs that blocking would miss).
-     This reduces O(n^2) comparisons to something manageable.
-
-  4. SCORE: Calculate detailed similarity scores for each candidate pair using
-     fuzzy string matching (levenshtein, jaro-winkler) and embedding cosine
-     similarity. Classify as match/no_match/uncertain based on thresholds.
-
-TODO: add clustering to group all matches into entities - right now we just have
-pairwise matches, need to do transitive closure to get entity clusters (if A=B
-and B=C, then A=B=C is one entity)
-"""
+"""Entity resolution pipeline orchestrator."""
 
 from pathlib import Path
 
@@ -41,12 +18,7 @@ log = structlog.get_logger()
 
 
 class ResolutionPipeline:
-    """Orchestrate the entity resolution pipeline.
-
-    This is the main class you interact with - either directly in code or
-    through the CLI. It coordinates all the components and manages state
-    in the database.
-    """
+    """Orchestrate the entity resolution pipeline."""
 
     def __init__(
         self,
@@ -62,8 +34,6 @@ class ResolutionPipeline:
         self.config = config or MatchConfig()
         db_path = db_path or self.config.db_path
 
-        # wire up all the components - these are stateless except for the database
-        # and embedding store (which holds vectors in memory for ANN search)
         self.db = Database(db_path)
         self.normalizer = TextNormalizer()
         self.loader = DataLoader(self.normalizer)
@@ -130,10 +100,6 @@ class ResolutionPipeline:
     ) -> list:
         """Find candidate pairs for matching.
 
-        This is where we go from O(n^2) potential comparisons to something
-        manageable. Blocking + ANN typically gets us down to O(n * k) where
-        k is a small constant (ann_top_k + blocking bucket size).
-
         Args:
             records: List of records.
             embeddings: Dictionary of embeddings.
@@ -147,9 +113,6 @@ class ResolutionPipeline:
             self.normalizer,
         )
 
-        # blocking is cheaper but can miss matches (e.g., typo in first 3 chars)
-        # ANN catches semantic similarity but is more expensive
-        # using both gives us the best recall
         if self.config.use_blocking:
             candidates = generator.generate_with_blocking(
                 records, embeddings, self.config.blocking_key
@@ -167,10 +130,6 @@ class ResolutionPipeline:
     ) -> list[PairScores]:
         """Score candidate pairs.
 
-        This is the computationally intensive part - we compute multiple
-        similarity metrics for each candidate. Could parallelize this
-        pretty easily if it becomes a bottleneck.
-
         Args:
             candidates: List of candidate pairs.
             records: List of records.
@@ -178,7 +137,6 @@ class ResolutionPipeline:
         Returns:
             List of pair scores.
         """
-        # build a lookup map so we can quickly find records by ID
         record_map = {r.record_id: r for r in records}
         pairs_to_score = []
 
@@ -190,7 +148,6 @@ class ResolutionPipeline:
                     (record_a, record_b, candidate.embedding_similarity)
                 )
 
-        # the scoring engine handles all the fuzzy matching and classification
         scores = self.scoring_engine.score_pairs(pairs_to_score)
         self.db.insert_pair_scores(scores)
 
@@ -218,7 +175,6 @@ class ResolutionPipeline:
         """
         log.info("starting_pipeline", file=str(file_path))
 
-        # Stage 1: Ingest - load data, normalize text, save to DB
         records = self.ingest(
             file_path,
             name_field=name_field,
@@ -226,18 +182,11 @@ class ResolutionPipeline:
             id_field=id_field,
         )
 
-        # Stage 2: Generate embeddings - this can take a while for large datasets
-        # but sentence-transformers is pretty fast on GPU
         match_fields = match_fields or ["name"]
         embeddings = self.generate_embeddings(records, match_fields)
-
-        # Stage 3: Find candidates - blocking + ANN to reduce comparison space
         candidates = self.find_candidates(records, embeddings)
-
-        # Stage 4: Score candidates - compute all similarity metrics, classify
         scores = self.score_candidates(candidates, records)
 
-        # Log summary - this is what shows up in the CLI output
         stats = self.db.get_statistics()
         log.info(
             "pipeline_complete",
@@ -255,10 +204,6 @@ class ResolutionPipeline:
         match_fields: list[str] | None = None,
     ) -> list[PairScores]:
         """Run matching on already-loaded records.
-
-        Useful for re-running the matching with different thresholds or fields
-        without re-ingesting the data. Also handy for testing - ingest once,
-        experiment with different configs.
 
         Args:
             match_fields: Fields to use for matching.
@@ -279,26 +224,11 @@ class ResolutionPipeline:
         return scores
 
     def get_matches(self) -> list[tuple[PairScores, Record, Record]]:
-        """Get all matched pairs.
-
-        Returns high-confidence matches. These are either auto-matched
-        (composite_score >= auto_match_threshold) or human-verified.
-
-        Returns:
-            List of (score, record_a, record_b) tuples.
-        """
+        """Get all matched pairs."""
         return self.db.get_scores_by_classification(MatchClassification.MATCH)
 
     def get_uncertain(self) -> list[tuple[PairScores, Record, Record]]:
-        """Get all uncertain pairs.
-
-        These are the ones that need human review (or LLM assistance).
-        Sorted by composite_score descending so highest-confidence uncertain
-        pairs come first.
-
-        Returns:
-            List of (score, record_a, record_b) tuples.
-        """
+        """Get all uncertain pairs."""
         return self.db.get_scores_by_classification(MatchClassification.UNCERTAIN)
 
     def get_statistics(self) -> dict:
