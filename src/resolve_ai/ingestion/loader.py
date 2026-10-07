@@ -110,15 +110,16 @@ class DataLoader:
         address_field: str | None,
         id_field: str | None,
     ) -> list[Record]:
-        """Load records from Parquet using DuckDB."""
+        """Load records from Parquet using DuckDB's native reader."""
         import duckdb
 
         conn = duckdb.connect()
-        df = conn.execute(f"SELECT * FROM '{file_path}'").fetchdf()
+        cursor = conn.execute("SELECT * FROM read_parquet(?)", [str(file_path)])
+        columns = [column[0] for column in cursor.description]
 
         records = []
-        for row_num, row in df.iterrows():
-            row_dict = row.to_dict()
+        for row_num, row in enumerate(cursor.fetchall()):
+            row_dict = dict(zip(columns, row))
             record = self._create_record(
                 row_dict,
                 source_file=str(file_path),
