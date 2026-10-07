@@ -1,6 +1,6 @@
 [project]
 name = "resolve-ai"
-version = "0.1.0"
+version = "0.1.1"
 description = "Entity resolution for company records using sentence embeddings and fuzzy matching"
 readme = "README.md"
 authors = [
