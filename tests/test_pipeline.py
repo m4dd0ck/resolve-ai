@@ -11,7 +11,7 @@ class TestPipelineIntegration:
 
     def test_pipeline_loads_records(self, sample_csv, tmp_path):
         """Pipeline should load records from CSV."""
-        config = MatchConfig(use_llm=False, ann_threshold=0.3)
+        config = MatchConfig(ann_threshold=0.3)
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 
@@ -22,7 +22,7 @@ class TestPipelineIntegration:
 
     def test_pipeline_generates_embeddings(self, sample_csv, tmp_path):
         """Pipeline should generate embeddings for records."""
-        config = MatchConfig(use_llm=False, ann_threshold=0.3)
+        config = MatchConfig(ann_threshold=0.3)
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 
@@ -35,7 +35,7 @@ class TestPipelineIntegration:
 
     def test_pipeline_finds_candidates(self, sample_csv, tmp_path):
         """Pipeline should find candidate pairs."""
-        config = MatchConfig(use_llm=False, ann_threshold=0.3, ann_top_k=5)
+        config = MatchConfig(ann_threshold=0.3, ann_top_k=5)
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 
@@ -49,7 +49,6 @@ class TestPipelineIntegration:
     def test_full_pipeline_run(self, sample_csv, tmp_path):
         """Full pipeline should run and produce scores."""
         config = MatchConfig(
-            use_llm=False,
             ann_threshold=0.3,
             ann_top_k=5,
             auto_match_threshold=0.85,
@@ -74,7 +73,6 @@ class TestPipelineIntegration:
     def test_pipeline_identifies_duplicates(self, sample_csv, tmp_path):
         """Pipeline should identify obvious duplicates."""
         config = MatchConfig(
-            use_llm=False,
             ann_threshold=0.3,
             ann_top_k=5,
             auto_match_threshold=0.80,
@@ -96,7 +94,6 @@ class TestPipelineIntegration:
     def test_pipeline_returns_matches(self, sample_csv, tmp_path):
         """Pipeline get_matches should return matched pairs."""
         config = MatchConfig(
-            use_llm=False,
             ann_threshold=0.3,
             auto_match_threshold=0.75,
         )
@@ -120,7 +117,7 @@ class TestPipelineEdgeCases:
         empty_csv = tmp_path / "empty.csv"
         empty_csv.write_text("id,name,address\n")
 
-        config = MatchConfig(use_llm=False)
+        config = MatchConfig()
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 
@@ -132,7 +129,7 @@ class TestPipelineEdgeCases:
         single_csv = tmp_path / "single.csv"
         single_csv.write_text("id,name,address\n1,Apple Inc.,Cupertino CA\n")
 
-        config = MatchConfig(use_llm=False)
+        config = MatchConfig()
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 
@@ -146,7 +143,7 @@ class TestPipelineEdgeCases:
         csv_no_address = tmp_path / "no_address.csv"
         csv_no_address.write_text("id,name\n1,Apple Inc.\n2,Apple Incorporated\n")
 
-        config = MatchConfig(use_llm=False, ann_threshold=0.3)
+        config = MatchConfig(ann_threshold=0.3)
         db_path = tmp_path / "test.db"
         pipeline = ResolutionPipeline(config, db_path)
 

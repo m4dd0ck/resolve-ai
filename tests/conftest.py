@@ -60,7 +60,6 @@ def sample_records() -> list[Record]:
 def match_config() -> MatchConfig:
     """Default match configuration for tests."""
     return MatchConfig(
-        use_llm=False,
         ann_top_k=5,
         ann_threshold=0.3,
         auto_match_threshold=0.85,

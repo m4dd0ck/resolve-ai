@@ -25,12 +25,6 @@ class MatchConfig(BaseSettings):
     auto_match_threshold: float = 0.90
     uncertain_threshold: float = 0.50
 
-    use_llm: bool = False
-    llm_model: str = "llama3.2:3b"
-    llm_base_url: str = "http://localhost:11434"
-    llm_only_for_uncertain: bool = True
-    max_llm_calls_per_run: int = 100
-
     db_path: Path = Field(default=Path("resolve.db"))
     cache_dir: Path = Field(default=Path("data/cache"))
 
