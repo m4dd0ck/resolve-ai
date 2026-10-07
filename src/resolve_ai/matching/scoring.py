@@ -1,7 +1,4 @@
-"""Scoring engine for entity matching.
-
-FIXME: address scoring seems broken for PO boxes
-"""
+"""Scoring engine for entity matching."""
 
 import structlog
 from rapidfuzz import fuzz
