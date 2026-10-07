@@ -1,7 +1,7 @@
 [project]
 name = "resolve-ai"
 version = "0.1.0"
-description = "LLM-Augmented Entity Resolution and Data Enrichment"
+description = "Entity resolution for company records using sentence embeddings and fuzzy matching"
 readme = "README.md"
 authors = [
     { name = "m4dd0ck", email = "noahmaddock1@gmail.com" }
