@@ -33,7 +33,7 @@ The system uses a hybrid approach:
 ## Installation
 
 ```bash
-# requires python 3.11+
+# requires python 3.12+
 git clone https://github.com/m4dd0ck/resolve-ai.git
 cd resolve-ai
 uv sync
