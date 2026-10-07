@@ -4,7 +4,7 @@ version = "0.1.1"
 description = "Entity resolution for company records using sentence embeddings and fuzzy matching"
 readme = "README.md"
 authors = [
-    { name = "m4dd0ck", email = "noahmaddock1@gmail.com" }
+    { name = "m4dd0ck" }
 ]
 requires-python = ">=3.12"
 dependencies = [
