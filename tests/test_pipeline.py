@@ -1,6 +1,5 @@
 """Tests for the entity resolution pipeline."""
 
-
 from resolve_ai.config import MatchConfig
 from resolve_ai.models import MatchClassification
 from resolve_ai.pipeline import ResolutionPipeline

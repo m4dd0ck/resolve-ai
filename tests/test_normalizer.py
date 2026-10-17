@@ -1,6 +1,5 @@
 """Tests for text normalization."""
 
-
 from resolve_ai.ingestion.normalizer import TextNormalizer
 
 

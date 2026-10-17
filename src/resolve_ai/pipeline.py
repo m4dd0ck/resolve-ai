@@ -144,9 +144,7 @@ class ResolutionPipeline:
             record_a = record_map.get(candidate.record_id_a)
             record_b = record_map.get(candidate.record_id_b)
             if record_a and record_b:
-                pairs_to_score.append(
-                    (record_a, record_b, candidate.embedding_similarity)
-                )
+                pairs_to_score.append((record_a, record_b, candidate.embedding_similarity))
 
         scores = self.scoring_engine.score_pairs(pairs_to_score)
         self.db.insert_pair_scores(scores)

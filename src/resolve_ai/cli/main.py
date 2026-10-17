@@ -39,9 +39,7 @@ def ingest(
         None, "--address", "-a", help="Column for address (optional)"
     ),
     id_field: str = typer.Option(None, "--id", "-i", help="Column for record ID (optional)"),
-    db_path: Path = typer.Option(
-        Path("resolve.db"), "--db", "-d", help="Database file path"
-    ),
+    db_path: Path = typer.Option(Path("resolve.db"), "--db", "-d", help="Database file path"),
 ) -> None:
     """Ingest data from a file into the database."""
     if not file_path.exists():
@@ -84,9 +82,7 @@ def match(
     auto_match: float = typer.Option(
         0.9, "--auto-match", help="Threshold for automatic match classification"
     ),
-    db_path: Path = typer.Option(
-        Path("resolve.db"), "--db", "-d", help="Database file path"
-    ),
+    db_path: Path = typer.Option(Path("resolve.db"), "--db", "-d", help="Database file path"),
 ) -> None:
     """Run entity matching on data."""
     config = MatchConfig(
@@ -129,9 +125,7 @@ def match(
 
 @app.command()
 def report(
-    db_path: Path = typer.Option(
-        Path("resolve.db"), "--db", "-d", help="Database file path"
-    ),
+    db_path: Path = typer.Option(Path("resolve.db"), "--db", "-d", help="Database file path"),
     output: Path = typer.Option(None, "--output", "-o", help="Output file path"),
     format: str = typer.Option("table", "--format", "-f", help="Output format: table, csv, json"),
 ) -> None:
@@ -183,9 +177,7 @@ def report(
 
 @app.command()
 def review(
-    db_path: Path = typer.Option(
-        Path("resolve.db"), "--db", "-d", help="Database file path"
-    ),
+    db_path: Path = typer.Option(Path("resolve.db"), "--db", "-d", help="Database file path"),
     limit: int = typer.Option(10, "--limit", "-l", help="Number of pairs to review"),
 ) -> None:
     """Review uncertain matches interactively."""
@@ -257,6 +249,7 @@ def review(
             console.print("[yellow]Skipped.[/yellow]")
 
         import time
+
         time.sleep(0.5)
 
     console.print(f"\n[bold]Reviewed {reviewed} pairs.[/bold]")
@@ -264,9 +257,7 @@ def review(
 
 @app.command()
 def stats(
-    db_path: Path = typer.Option(
-        Path("resolve.db"), "--db", "-d", help="Database file path"
-    ),
+    db_path: Path = typer.Option(Path("resolve.db"), "--db", "-d", help="Database file path"),
 ) -> None:
     """Show quick statistics."""
     if not db_path.exists():

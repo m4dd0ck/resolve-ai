@@ -61,9 +61,7 @@ class ScoringEngine:
 
         if llm_score is not None and self.config.llm_weight > 0:
             total_weight = (
-                self.config.fuzzy_weight
-                + self.config.embedding_weight
-                + self.config.llm_weight
+                self.config.fuzzy_weight + self.config.embedding_weight + self.config.llm_weight
             )
             return (
                 self.config.fuzzy_weight * best_fuzzy
@@ -74,10 +72,9 @@ class ScoringEngine:
             total = self.config.fuzzy_weight + self.config.embedding_weight
             if total == 0:
                 return 0.0
-            return (
-                (self.config.fuzzy_weight / total) * best_fuzzy
-                + (self.config.embedding_weight / total) * embedding_similarity
-            )
+            return (self.config.fuzzy_weight / total) * best_fuzzy + (
+                self.config.embedding_weight / total
+            ) * embedding_similarity
 
     def classify(self, score: float) -> MatchClassification:
         """Classify pair based on composite score.
@@ -120,9 +117,7 @@ class ScoringEngine:
 
         fuzzy_scores = self.compute_fuzzy_scores(text_a, text_b)
 
-        composite = self.compute_composite_score(
-            fuzzy_scores, embedding_similarity, llm_score
-        )
+        composite = self.compute_composite_score(fuzzy_scores, embedding_similarity, llm_score)
 
         pair_key = tuple(sorted([record_a.record_id, record_b.record_id]))
 
@@ -156,12 +151,8 @@ class ScoringEngine:
             results.append(score)
 
         matches = sum(1 for s in results if s.classification == MatchClassification.MATCH)
-        uncertain = sum(
-            1 for s in results if s.classification == MatchClassification.UNCERTAIN
-        )
-        no_match = sum(
-            1 for s in results if s.classification == MatchClassification.NO_MATCH
-        )
+        uncertain = sum(1 for s in results if s.classification == MatchClassification.UNCERTAIN)
+        no_match = sum(1 for s in results if s.classification == MatchClassification.NO_MATCH)
 
         log.info(
             "scoring_complete",

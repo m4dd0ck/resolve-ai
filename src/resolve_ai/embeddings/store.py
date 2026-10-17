@@ -66,9 +66,7 @@ class EmbeddingStore:
             return
 
         record_ids = list(new_embeddings.keys())
-        emb_array = np.array(
-            [new_embeddings[rid] for rid in record_ids], dtype=np.float32
-        )
+        emb_array = np.array([new_embeddings[rid] for rid in record_ids], dtype=np.float32)
 
         self.index.add(emb_array)
 
