@@ -25,16 +25,5 @@ class MatchConfig(BaseSettings):
     uncertain_threshold: float = 0.50
 
     db_path: Path = Field(default=Path("resolve.db"))
-    cache_dir: Path = Field(default=Path("data/cache"))
-
-    model_config = {"env_prefix": "RESOLVE_"}
-
-
-class Settings(BaseSettings):
-    """Global application settings."""
-
-    log_level: str = "INFO"
-    log_format: str = "console"
-    show_progress: bool = True
 
     model_config = {"env_prefix": "RESOLVE_"}

@@ -63,14 +63,3 @@ class ReviewDecision(BaseModel):
     reviewer: str = "cli_user"
     notes: str | None = None
     reviewed_at: datetime = Field(default_factory=datetime.now)
-
-
-class EntityCluster(BaseModel):
-    """A cluster of records representing the same entity.
-
-    TODO: implement transitive closure to build these from pairwise matches.
-    """
-
-    cluster_id: str
-    record_ids: list[str]
-    confidence: float

@@ -58,14 +58,6 @@ CREATE TABLE IF NOT EXISTS review_decisions (
     notes TEXT,
     reviewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-
--- Final resolved entities (clusters of matching records)
-CREATE TABLE IF NOT EXISTS entity_clusters (
-    cluster_id TEXT,
-    record_id TEXT,
-    confidence FLOAT,
-    PRIMARY KEY (cluster_id, record_id)
-);
 """
 
 
@@ -166,31 +158,6 @@ class Database:
 
         log.info("records_inserted", count=len(records))
         return len(records)
-
-    def get_record(self, record_id: str) -> Record | None:
-        """Get a record by ID.
-
-        Args:
-            record_id: The record ID.
-
-        Returns:
-            The record or None if not found.
-        """
-        result = self.conn.execute(
-            "SELECT * FROM records WHERE record_id = ?", [record_id]
-        ).fetchone()
-
-        if result is None:
-            return None
-
-        return Record(
-            record_id=result[0],
-            source_file=result[1],
-            source_row=result[2],
-            raw_data=json.loads(result[3]) if isinstance(result[3], str) else result[3],
-            name_normalized=result[4],
-            address_normalized=result[5],
-        )
 
     def get_all_records(self) -> list[Record]:
         """Get all records from the database.
