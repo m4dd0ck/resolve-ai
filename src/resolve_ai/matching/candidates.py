@@ -63,7 +63,8 @@ class CandidateGenerator:
                 if similarity < self.config.ann_threshold:
                     continue
 
-                pair_key = tuple(sorted([record.record_id, neighbor_id]))
+                first, second = sorted([record.record_id, neighbor_id])
+                pair_key = (first, second)
                 if pair_key in seen_pairs:
                     continue
                 seen_pairs.add(pair_key)
@@ -114,7 +115,8 @@ class CandidateGenerator:
 
             for i, record_a in enumerate(block_records):
                 for record_b in block_records[i + 1 :]:
-                    pair_key = tuple(sorted([record_a.record_id, record_b.record_id]))
+                    first, second = sorted([record_a.record_id, record_b.record_id])
+                    pair_key = (first, second)
                     if pair_key in seen_pairs:
                         continue
                     seen_pairs.add(pair_key)
