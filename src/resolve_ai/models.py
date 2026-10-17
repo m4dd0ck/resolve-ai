@@ -45,8 +45,6 @@ class PairScores(BaseModel):
     jaro_winkler: float = Field(ge=0.0, le=1.0)
     token_sort_ratio: float = Field(ge=0.0, le=1.0)
     cosine_similarity: float
-    llm_score: float | None = Field(default=None, ge=0.0, le=1.0)
-    llm_reasoning: str | None = None
     composite_score: float
     classification: MatchClassification
 
@@ -76,11 +74,3 @@ class EntityCluster(BaseModel):
     cluster_id: str
     record_ids: list[str]
     confidence: float
-
-
-class LLMMatchResult(BaseModel):
-    """Result from LLM match evaluation."""
-
-    score: float = Field(ge=0.0, le=1.0)
-    reasoning: str
-    confidence: float = Field(ge=0.0, le=1.0)

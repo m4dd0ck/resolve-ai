@@ -221,9 +221,6 @@ def review(
         console.print(f"[dim]Fuzzy (Jaro-Winkler): {score.jaro_winkler:.3f}[/dim]")
         console.print(f"[dim]Embedding similarity: {score.cosine_similarity:.3f}[/dim]")
 
-        if score.llm_reasoning:
-            console.print(f"\n[bold]LLM Reasoning:[/bold] {score.llm_reasoning}")
-
         console.print("\n[dim]m=match, n=no match, s=skip, q=quit[/dim]")
 
         # Get decision

@@ -56,39 +56,36 @@ class TestCompositeScoring:
 
     def test_high_scores_yield_high_composite(self):
         """All high component scores should yield high composite."""
-        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6, llm_weight=0.0)
+        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6)
         engine = ScoringEngine(config)
 
         composite = engine.compute_composite_score(
             {"levenshtein_ratio": 0.95, "jaro_winkler": 0.97},
             embedding_similarity=0.92,
-            llm_score=None,
         )
 
         assert composite > 0.9
 
     def test_mixed_scores_yield_moderate_composite(self):
         """Mixed component scores should yield moderate composite."""
-        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6, llm_weight=0.0)
+        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6)
         engine = ScoringEngine(config)
 
         composite = engine.compute_composite_score(
             {"levenshtein_ratio": 0.5, "jaro_winkler": 0.6},
             embedding_similarity=0.7,
-            llm_score=None,
         )
 
         assert 0.5 < composite < 0.8
 
     def test_low_scores_yield_low_composite(self):
         """Low component scores should yield low composite."""
-        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6, llm_weight=0.0)
+        config = MatchConfig(fuzzy_weight=0.4, embedding_weight=0.6)
         engine = ScoringEngine(config)
 
         composite = engine.compute_composite_score(
             {"levenshtein_ratio": 0.2, "jaro_winkler": 0.3},
             embedding_similarity=0.25,
-            llm_score=None,
         )
 
         assert composite < 0.4
@@ -101,12 +98,12 @@ class TestCompositeScoring:
         # Fuzzy-heavy config
         config1 = MatchConfig(fuzzy_weight=0.8, embedding_weight=0.2)
         engine1 = ScoringEngine(config1)
-        composite1 = engine1.compute_composite_score(fuzzy_scores, embedding_sim, None)
+        composite1 = engine1.compute_composite_score(fuzzy_scores, embedding_sim)
 
         # Embedding-heavy config
         config2 = MatchConfig(fuzzy_weight=0.2, embedding_weight=0.8)
         engine2 = ScoringEngine(config2)
-        composite2 = engine2.compute_composite_score(fuzzy_scores, embedding_sim, None)
+        composite2 = engine2.compute_composite_score(fuzzy_scores, embedding_sim)
 
         # Fuzzy-heavy should score higher when fuzzy is high
         assert composite1 > composite2

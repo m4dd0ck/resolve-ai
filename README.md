@@ -134,7 +134,6 @@ src/resolve_ai/
 
 ## Future Work
 
-- [ ] LLM integration for disambiguating uncertain pairs (ollama)
 - [ ] Streamlit dashboard for bulk review
 - [ ] Entity clustering (transitive closure of matches)
 - [ ] Learned weights from review feedback

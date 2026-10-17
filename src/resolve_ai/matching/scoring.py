@@ -45,36 +45,24 @@ class ScoringEngine:
         self,
         fuzzy_scores: dict[str, float],
         embedding_similarity: float,
-        llm_score: float | None = None,
     ) -> float:
         """Compute weighted composite score.
 
         Args:
             fuzzy_scores: Dictionary of fuzzy match scores.
             embedding_similarity: Cosine similarity from embeddings.
-            llm_score: Optional LLM evaluation score.
 
         Returns:
             Composite score between 0.0 and 1.0.
         """
         best_fuzzy = max(fuzzy_scores.values()) if fuzzy_scores else 0.0
 
-        if llm_score is not None and self.config.llm_weight > 0:
-            total_weight = (
-                self.config.fuzzy_weight + self.config.embedding_weight + self.config.llm_weight
-            )
-            return (
-                self.config.fuzzy_weight * best_fuzzy
-                + self.config.embedding_weight * embedding_similarity
-                + self.config.llm_weight * llm_score
-            ) / total_weight
-        else:
-            total = self.config.fuzzy_weight + self.config.embedding_weight
-            if total == 0:
-                return 0.0
-            return (self.config.fuzzy_weight / total) * best_fuzzy + (
-                self.config.embedding_weight / total
-            ) * embedding_similarity
+        total = self.config.fuzzy_weight + self.config.embedding_weight
+        if total == 0:
+            return 0.0
+        return (self.config.fuzzy_weight / total) * best_fuzzy + (
+            self.config.embedding_weight / total
+        ) * embedding_similarity
 
     def classify(self, score: float) -> MatchClassification:
         """Classify pair based on composite score.
@@ -97,8 +85,6 @@ class ScoringEngine:
         record_a: Record,
         record_b: Record,
         embedding_similarity: float,
-        llm_score: float | None = None,
-        llm_reasoning: str | None = None,
     ) -> PairScores:
         """Score a single candidate pair.
 
@@ -106,8 +92,6 @@ class ScoringEngine:
             record_a: First record.
             record_b: Second record.
             embedding_similarity: Cosine similarity between embeddings.
-            llm_score: Optional LLM evaluation score.
-            llm_reasoning: Optional LLM reasoning text.
 
         Returns:
             Complete pair scores with classification.
@@ -117,7 +101,7 @@ class ScoringEngine:
 
         fuzzy_scores = self.compute_fuzzy_scores(text_a, text_b)
 
-        composite = self.compute_composite_score(fuzzy_scores, embedding_similarity, llm_score)
+        composite = self.compute_composite_score(fuzzy_scores, embedding_similarity)
 
         pair_key = tuple(sorted([record_a.record_id, record_b.record_id]))
 
@@ -127,8 +111,6 @@ class ScoringEngine:
             jaro_winkler=fuzzy_scores["jaro_winkler"],
             token_sort_ratio=fuzzy_scores["token_sort_ratio"],
             cosine_similarity=embedding_similarity,
-            llm_score=llm_score,
-            llm_reasoning=llm_reasoning,
             composite_score=composite,
             classification=self.classify(composite),
         )

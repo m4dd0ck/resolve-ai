@@ -45,8 +45,6 @@ CREATE TABLE IF NOT EXISTS pair_scores (
     jaro_winkler FLOAT,
     token_sort_ratio FLOAT,
     cosine_similarity FLOAT,
-    llm_score FLOAT,
-    llm_reasoning TEXT,
     composite_score FLOAT NOT NULL,
     classification TEXT CHECK (classification IN ('match', 'no_match', 'uncertain')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -69,6 +67,36 @@ CREATE TABLE IF NOT EXISTS entity_clusters (
     PRIMARY KEY (cluster_id, record_id)
 );
 """
+
+
+def _row_to_record(values: tuple) -> Record:
+    record_id, source_file, source_row, raw_data, name_normalized, address_normalized = values
+    return Record(
+        record_id=record_id,
+        source_file=source_file,
+        source_row=source_row,
+        raw_data=json.loads(raw_data) if isinstance(raw_data, str) else raw_data,
+        name_normalized=name_normalized,
+        address_normalized=address_normalized,
+    )
+
+
+def _row_to_scored_pair(row: tuple) -> tuple[PairScores, Record, Record]:
+    """Map a scored-pair query row to (scores, record_a, record_b).
+
+    Reason: the queries name their columns instead of selecting ps.*, because databases
+    created by v0.1.x still carry two dropped score columns. Keep this order in sync.
+    """
+    score = PairScores(
+        pair_id=row[0],
+        levenshtein_ratio=row[1],
+        jaro_winkler=row[2],
+        token_sort_ratio=row[3],
+        cosine_similarity=row[4],
+        composite_score=row[5],
+        classification=MatchClassification(row[6]),
+    )
+    return score, _row_to_record(row[7:13]), _row_to_record(row[13:19])
 
 
 class Database:
@@ -238,15 +266,13 @@ class Database:
                 """
                 INSERT INTO pair_scores
                 (pair_id, levenshtein_ratio, jaro_winkler, token_sort_ratio,
-                 cosine_similarity, llm_score, llm_reasoning, composite_score, classification)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 cosine_similarity, composite_score, classification)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (pair_id) DO UPDATE SET
                     levenshtein_ratio = EXCLUDED.levenshtein_ratio,
                     jaro_winkler = EXCLUDED.jaro_winkler,
                     token_sort_ratio = EXCLUDED.token_sort_ratio,
                     cosine_similarity = EXCLUDED.cosine_similarity,
-                    llm_score = EXCLUDED.llm_score,
-                    llm_reasoning = EXCLUDED.llm_reasoning,
                     composite_score = EXCLUDED.composite_score,
                     classification = EXCLUDED.classification
                 """,
@@ -256,8 +282,6 @@ class Database:
                     score.jaro_winkler,
                     score.token_sort_ratio,
                     score.cosine_similarity,
-                    score.llm_score,
-                    score.llm_reasoning,
                     score.composite_score,
                     score.classification.value,
                 ],
@@ -280,7 +304,8 @@ class Database:
         results = self.conn.execute(
             """
             SELECT
-                ps.*,
+                ps.pair_id, ps.levenshtein_ratio, ps.jaro_winkler, ps.token_sort_ratio,
+                ps.cosine_similarity, ps.composite_score, ps.classification,
                 ra.record_id, ra.source_file, ra.source_row, ra.raw_data,
                 ra.name_normalized, ra.address_normalized,
                 rb.record_id, rb.source_file, rb.source_row, rb.raw_data,
@@ -295,38 +320,7 @@ class Database:
             [classification.value],
         ).fetchall()
 
-        pairs = []
-        for row in results:
-            score = PairScores(
-                pair_id=row[0],
-                levenshtein_ratio=row[1],
-                jaro_winkler=row[2],
-                token_sort_ratio=row[3],
-                cosine_similarity=row[4],
-                llm_score=row[5],
-                llm_reasoning=row[6],
-                composite_score=row[7],
-                classification=MatchClassification(row[8]),
-            )
-            record_a = Record(
-                record_id=row[10],
-                source_file=row[11],
-                source_row=row[12],
-                raw_data=json.loads(row[13]) if isinstance(row[13], str) else row[13],
-                name_normalized=row[14],
-                address_normalized=row[15],
-            )
-            record_b = Record(
-                record_id=row[16],
-                source_file=row[17],
-                source_row=row[18],
-                raw_data=json.loads(row[19]) if isinstance(row[19], str) else row[19],
-                name_normalized=row[20],
-                address_normalized=row[21],
-            )
-            pairs.append((score, record_a, record_b))
-
-        return pairs
+        return [_row_to_scored_pair(row) for row in results]
 
     # Review operations
     def insert_review_decision(self, decision: ReviewDecision) -> None:
@@ -369,7 +363,8 @@ class Database:
         results = self.conn.execute(
             """
             SELECT
-                ps.*,
+                ps.pair_id, ps.levenshtein_ratio, ps.jaro_winkler, ps.token_sort_ratio,
+                ps.cosine_similarity, ps.composite_score, ps.classification,
                 ra.record_id, ra.source_file, ra.source_row, ra.raw_data,
                 ra.name_normalized, ra.address_normalized,
                 rb.record_id, rb.source_file, rb.source_row, rb.raw_data,
@@ -387,38 +382,7 @@ class Database:
             [limit],
         ).fetchall()
 
-        pairs = []
-        for row in results:
-            score = PairScores(
-                pair_id=row[0],
-                levenshtein_ratio=row[1],
-                jaro_winkler=row[2],
-                token_sort_ratio=row[3],
-                cosine_similarity=row[4],
-                llm_score=row[5],
-                llm_reasoning=row[6],
-                composite_score=row[7],
-                classification=MatchClassification(row[8]),
-            )
-            record_a = Record(
-                record_id=row[10],
-                source_file=row[11],
-                source_row=row[12],
-                raw_data=json.loads(row[13]) if isinstance(row[13], str) else row[13],
-                name_normalized=row[14],
-                address_normalized=row[15],
-            )
-            record_b = Record(
-                record_id=row[16],
-                source_file=row[17],
-                source_row=row[18],
-                raw_data=json.loads(row[19]) if isinstance(row[19], str) else row[19],
-                name_normalized=row[20],
-                address_normalized=row[21],
-            )
-            pairs.append((score, record_a, record_b))
-
-        return pairs
+        return [_row_to_scored_pair(row) for row in results]
 
     # Statistics
     def get_statistics(self) -> dict:

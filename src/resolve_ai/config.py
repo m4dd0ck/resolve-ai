@@ -20,7 +20,6 @@ class MatchConfig(BaseSettings):
 
     fuzzy_weight: float = 0.4
     embedding_weight: float = 0.6
-    llm_weight: float = 0.0
 
     auto_match_threshold: float = 0.90
     uncertain_threshold: float = 0.50
