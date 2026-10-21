@@ -28,8 +28,6 @@ uv run pytest -q
 
 ## Release
 
-Conventions in `~/developer/hq/CONVENTIONS.md` §Versioning.
-
 1. Bump `version` in `pyproject.toml` and `__version__` in `src/resolve_ai/__init__.py` to the same value; `uv lock`.
 2. Commit `chore: Release vX.Y.Z`, then `git tag -a vX.Y.Z -m "vX.Y.Z"` and `git push origin main --tags`.
 3. `gh release create vX.Y.Z --title "vX.Y.Z" --notes "<what changed>"` with the compare link to the previous tag, marked latest.
@@ -37,7 +35,7 @@ Conventions in `~/developer/hq/CONVENTIONS.md` §Versioning.
 
 ## Restore on a new machine
 
-1. Clone `git@github.com:m4dd0ck/resolve-ai.git`; `uv sync`.
+1. Clone `https://github.com/m4dd0ck/resolve-ai.git`; `uv sync`.
 2. Run `uv run pytest` once with network access so the embedding model lands in the cache. No secrets, no data beyond `data/sample/`.
 
 ## Validate
@@ -47,5 +45,4 @@ uv run ruff check . && uv run ruff format --check .
 uv run mypy
 uv run pytest
 uv run resolve match data/sample/companies.csv --name name --address address --db /tmp/resolve-check.db
-python3 ~/.claude/scripts/doc-check.py --repo .
 ```
